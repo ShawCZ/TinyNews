@@ -1,4 +1,4 @@
-package com.shaw.core.net.gson;
+package com.shaw.tinynews.api;
 
 import com.shaw.core.app.ConfigKeys;
 import com.shaw.core.app.Core;
@@ -19,14 +19,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
  *
  * @author XCZ
  */
-public class GsonRestClient {
+public class RestClient {
 	private static OkHttpClient mOkHttpClient;
 	private static Retrofit mRetrofit;
+	private static TinyService mTinyService;
 
 	private static final int DEFAULT_TIMEOUT = 10;
 	private static final int CACHE_SIZE = 10 * 1024 * 1024;
 
-	public static <T> T createService(final Class<T> service) {
+	public static TinyService createService() {
 		if (mOkHttpClient == null) {
 			File cacheFile = new File(Core.getApplicationContext().getCacheDir(), "okHttpCache");
 			RewriteCacheInterceptor interceptor = new RewriteCacheInterceptor();
@@ -53,7 +54,9 @@ public class GsonRestClient {
 					.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 					.build();
 		}
-
-		return mRetrofit.create(service);
+		if (mTinyService == null) {
+			mTinyService = mRetrofit.create(TinyService.class);
+		}
+		return mTinyService;
 	}
 }

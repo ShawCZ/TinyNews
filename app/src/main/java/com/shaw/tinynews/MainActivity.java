@@ -23,4 +23,5 @@ public class MainActivity extends BaseMaterialActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	}
+	//https://unsplash.com/napi/photos/random?orientation=portrait&query=wallpaper
 }

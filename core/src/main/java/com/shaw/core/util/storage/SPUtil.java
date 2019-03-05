@@ -11,7 +11,7 @@ import com.shaw.core.app.Core;
  * Created by shaw on 2017/9/1.
  */
 
-public final class LattePreference {
+public final class SPUtil {
 
     /**
      * 提示:
