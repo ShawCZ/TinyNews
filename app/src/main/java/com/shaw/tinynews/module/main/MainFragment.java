@@ -1,9 +1,10 @@
-package com.shaw.tinynews;
+package com.shaw.tinynews.module.main;
 
 import android.os.Bundle;
 import android.view.View;
 
 import com.shaw.core.base.delegates.BaseMaterialDelegate;
+import com.shaw.tinynews.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
