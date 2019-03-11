@@ -11,7 +11,7 @@ public class BasePresenter<V extends BaseContract.View> implements BaseContract.
 	public final String TAG = this.getClass().getSimpleName();
 
 	private V mView;
-	private final CompositeDisposable mDisposables;
+	public final CompositeDisposable mDisposables;
 
 	public BasePresenter(V view) {
 		setView(view);

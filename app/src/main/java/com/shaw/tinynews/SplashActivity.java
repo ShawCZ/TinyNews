@@ -2,7 +2,6 @@ package com.shaw.tinynews;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -16,10 +15,14 @@ import com.shaw.tinynews.service.SplashService;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created on 2019/3/5.
@@ -28,6 +31,7 @@ import androidx.appcompat.widget.AppCompatImageView;
  */
 public class SplashActivity extends AppCompatActivity {
 	private static final String TAG = "SplashActivity";
+	private Disposable mDisposable = null;
 	private static final RequestOptions OPTIONS = new RequestOptions()
 			.centerCrop()
 			.diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -53,13 +57,6 @@ public class SplashActivity extends AppCompatActivity {
 					.into(imageView);
 		}
 
-//		ObjectAnimator objectAnimatorX = ObjectAnimator.ofFloat(imageView, "scaleX", 1.2f, 1.0f);
-//		ObjectAnimator objectAnimatorY = ObjectAnimator.ofFloat(imageView, "scaleY", 1.2f, 1.0f);
-//		AnimatorSet animatorSet = new AnimatorSet();
-//		animatorSet.setDuration(1000);
-//		animatorSet.playTogether(objectAnimatorX, objectAnimatorY);
-//		animatorSet.start();
-
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		String today = calendar.get(Calendar.YEAR) + "" + calendar.get(Calendar.MONTH) + calendar.get(Calendar.DAY_OF_MONTH);
@@ -72,13 +69,24 @@ public class SplashActivity extends AppCompatActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-				startActivity(intent);
-			}
-		}, 2000);
+		mDisposable = Observable.timer(2, TimeUnit.SECONDS)
+				.subscribe(new Consumer<Long>() {
+					@Override
+					public void accept(Long aLong) throws Exception {
+						Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(intent);
+						SplashActivity.this.finish();
+					}
+				});
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (mDisposable != null) {
+			mDisposable.dispose();
+		}
 	}
 }

@@ -27,7 +27,7 @@ public class RestClient {
 	private static final int DEFAULT_TIMEOUT = 10;
 	private static final int CACHE_SIZE = 10 * 1024 * 1024;
 
-	public static TinyService createService() {
+	public static TinyService getService() {
 		if (mOkHttpClient == null) {
 			File cacheFile = new File(Core.getApplicationContext().getCacheDir(), "okHttpCache");
 			RewriteCacheInterceptor interceptor = new RewriteCacheInterceptor();

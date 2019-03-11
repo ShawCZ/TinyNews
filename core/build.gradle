@@ -63,4 +63,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     //Log
     api 'com.orhanobut:logger:2.2.0'
+    //今日头条适配
+    api 'me.jessyan:autosize:1.1.2'
 }
