@@ -2,6 +2,8 @@ package com.shaw.tinynews.app;
 
 import android.app.Application;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.shaw.core.app.Core;
 import com.shaw.core.net.interceptors.RewriteCacheInterceptor;
 
@@ -18,5 +20,6 @@ public class App extends Application {
 				.withApiHost("http://news-at.zhihu.com/api/4/")
 				.withInterceptor(new RewriteCacheInterceptor())
 				.configure();
+		Logger.addLogAdapter(new AndroidLogAdapter());
 	}
 }

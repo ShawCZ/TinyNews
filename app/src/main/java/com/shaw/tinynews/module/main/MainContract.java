@@ -13,9 +13,13 @@ import com.shaw.tinynews.model.main.Latest;
 public interface MainContract {
 	interface View extends BaseContract.View<Presenter> {
 		void loadLatest(Latest latest);
+
+		void loadBefore(Latest latest);
 	}
 
 	interface Presenter extends BaseContract.Presenter {
 		void latest(Context context);
+
+		void before(Context context, String currentDate);
 	}
 }

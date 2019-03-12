@@ -8,7 +8,7 @@ import java.util.List;
 public class Latest {
 
 	private String date;
-	private List<Stories> stories;
+	private List<Story> stories;
 	private List<TopStory> top_stories;
 
 	public void setDate(String date) {
@@ -19,11 +19,11 @@ public class Latest {
 		return date;
 	}
 
-	public void setStories(List<Stories> stories) {
+	public void setStories(List<Story> stories) {
 		this.stories = stories;
 	}
 
-	public List<Stories> getStories() {
+	public List<Story> getStories() {
 		return stories;
 	}
 

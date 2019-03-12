@@ -16,6 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".module.detail.DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -25,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.shaw.tinynews.module.main.MainActivity"
+            android:name=".module.main.MainActivity"
             android:screenOrientation="portrait" />
 
         <service android:name=".service.SplashService" />

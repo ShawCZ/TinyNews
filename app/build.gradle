@@ -31,6 +31,8 @@ configurations.all {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
+    implementation 'com.google.android.material:material:1.1.0-alpha04'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
     implementation project(':core')
 
@@ -38,4 +40,7 @@ dependencies {
     //Banner依赖
     implementation 'com.bigkoo:convenientbanner:2.0.5'
     implementation 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:1.2.32@aar'
+    //jsoup
+    implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 }

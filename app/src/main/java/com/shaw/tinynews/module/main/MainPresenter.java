@@ -42,4 +42,26 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 					}
 				}));
 	}
+
+	@Override
+	public void before(Context context, String currentDate) {
+		mDisposables.add(RestClient.getService()
+				.before(currentDate)
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Consumer<Latest>() {
+					@Override
+					public void accept(Latest latest) throws Exception {
+						Log.d(TAG, "accept: latest = " + latest);
+						if (latest != null) {
+							getView().loadBefore(latest);
+						}
+					}
+				}, new Consumer<Throwable>() {
+					@Override
+					public void accept(Throwable throwable) throws Exception {
+						Log.d(TAG, "accept: throwable = " + throwable.getMessage());
+					}
+				}));
+	}
 }

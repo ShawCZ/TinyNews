@@ -1,18 +1,21 @@
 package com.shaw.tinynews.module.main;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.shaw.core.mvp.PresenterDelegate;
-import com.shaw.core.util.CommonUtil;
 import com.shaw.tinynews.R;
 import com.shaw.tinynews.R2;
+import com.shaw.tinynews.model.main.DateTitle;
 import com.shaw.tinynews.model.main.Latest;
+import com.shaw.tinynews.model.main.Story;
 import com.shaw.tinynews.model.main.TopStory;
+import com.shaw.tinynews.module.detail.DetailActivity;
 import com.shaw.tinynews.view.banner.BannerCreator;
 
 import java.util.ArrayList;
@@ -30,13 +33,15 @@ import butterknife.BindView;
  *
  * @author XCZ
  */
-public class MainFragment extends PresenterDelegate<MainContract.Presenter> implements MainContract.View, BaseQuickAdapter.OnItemClickListener {
+public class MainFragment extends PresenterDelegate<MainContract.Presenter> implements MainContract.View, BaseQuickAdapter.OnItemClickListener, BaseQuickAdapter.RequestLoadMoreListener, SwipeRefreshLayout.OnRefreshListener {
 	@BindView(R2.id.rv_index)
 	RecyclerView mRecyclerView = null;
 	@BindView(R2.id.srl_index)
 	SwipeRefreshLayout mRefreshLayout = null;
 
+	private ConvenientBanner<String> mBanner = null;
 	private MainAdapter mAdapter = null;
+	private String mCurrentDate = null;
 
 	@Override
 	public Object setLayout() {
@@ -55,6 +60,7 @@ public class MainFragment extends PresenterDelegate<MainContract.Presenter> impl
 				android.R.color.holo_red_light
 		);
 		mRefreshLayout.setProgressViewOffset(true, 120, 300);
+		mRefreshLayout.setOnRefreshListener(this);
 	}
 
 	private void initRecyclerView() {
@@ -62,7 +68,12 @@ public class MainFragment extends PresenterDelegate<MainContract.Presenter> impl
 		mAdapter = new MainAdapter(null);
 		mRecyclerView.setLayoutManager(manager);
 		mRecyclerView.setAdapter(mAdapter);
+		mAdapter.bindToRecyclerView(mRecyclerView);
+		mAdapter.setEnableLoadMore(true);
+		mAdapter.disableLoadMoreIfNotFullPage();
+		mAdapter.openLoadAnimation();
 		mAdapter.setOnItemClickListener(this);
+		mAdapter.setOnLoadMoreListener(this, mRecyclerView);
 	}
 
 	@Override
@@ -73,27 +84,41 @@ public class MainFragment extends PresenterDelegate<MainContract.Presenter> impl
 	}
 
 	@Override
-	public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-
-	}
-
-	@Override
 	protected MainContract.Presenter initPresenter() {
 		return new MainPresenter(this);
 	}
 
 	@Override
 	public void loadLatest(Latest latest) {
-		mAdapter.addData(latest.getStories());
-		mAdapter.addHeaderView(loadBanner(latest.getTop_stories()));
+		mCurrentDate = latest.getDate();
+		List<MultiItemEntity> newData = new ArrayList<>();
+		newData.add(new DateTitle("今日新闻"));
+		newData.addAll(latest.getStories());
+		mAdapter.setNewData(newData);
+		//只需要加载一次头部banner
+		if (mBanner == null) {
+			mBanner = BannerCreator.createBanner(getContentActivity());
+			mAdapter.addHeaderView(loadBanner(mBanner, latest.getTop_stories()));
+		} else {
+			//更新banner数据
+			loadBanner(mBanner, latest.getTop_stories());
+		}
 		mAdapter.notifyDataSetChanged();
+		mRefreshLayout.setEnabled(true);
 	}
 
-	private View loadBanner(List<TopStory> topStories) {
-		ConvenientBanner<String> banner = new ConvenientBanner<>(getContentActivity());
-		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, CommonUtil.dip2px(getContentActivity(), 240));
-		banner.setLayoutParams(params);
+	@Override
+	public void loadBefore(Latest latest) {
+		Log.d(TAG, "loadBefore: ");
+		mCurrentDate = latest.getDate();
+		List<MultiItemEntity> newData = new ArrayList<>();
+		newData.add(new DateTitle(mCurrentDate));
+		newData.addAll(latest.getStories());
+		mAdapter.addData(newData);
+		mAdapter.loadMoreComplete();
+	}
 
+	private View loadBanner(ConvenientBanner<String> mBanner, List<TopStory> topStories) {
 		List<String> imageUrls = new ArrayList<>();
 		List<String> imageTitles = new ArrayList<>();
 		topStories.iterator();
@@ -101,12 +126,38 @@ public class MainFragment extends PresenterDelegate<MainContract.Presenter> impl
 			imageUrls.add(topStory.getImage());
 			imageTitles.add(topStory.getTitle());
 		}
-		BannerCreator.setDefault(banner, imageUrls, imageTitles, new OnItemClickListener() {
+
+		BannerCreator.setDefault(mBanner, imageUrls, imageTitles, new OnItemClickListener() {
 			@Override
 			public void onItemClick(int position) {
-				topStories.get(position);
+				TopStory topStory = topStories.get(position);
+				List<String> images = new ArrayList<>();
+				images.add(topStory.getImage());
+				Story story = new Story(topStory.getId(), topStory.getTitle(), topStory.getType(), topStory.getGa_prefix(), images);
+				DetailActivity.start(getContentActivity(), story);
 			}
 		});
-		return banner;
+		return mBanner;
+	}
+
+	@Override
+	public void onLoadMoreRequested() {
+		mPresenter.before(getContentActivity(), mCurrentDate);
+	}
+
+	@Override
+	public void onRefresh() {
+		mRefreshLayout.setEnabled(false);
+		mPresenter.latest(getContentActivity());
+	}
+
+	@Override
+	public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+		if (adapter.getItem(position) instanceof Story) {
+			Story story = (Story) adapter.getItem(position);
+			if (story != null) {
+				DetailActivity.start(getContentActivity(), story);
+			}
+		}
 	}
 }

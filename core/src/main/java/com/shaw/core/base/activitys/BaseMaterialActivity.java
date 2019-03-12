@@ -23,13 +23,13 @@ public abstract class BaseMaterialActivity extends AppCompatActivity implements 
 
 	public abstract int setContainerId();
 
-
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		DELEGATE.onCreate(savedInstanceState);
-		if (savedInstanceState == null && setRootDelegate() != null) {
-			DELEGATE.loadRootFragment(setContainerId(), setRootDelegate());
+		BaseMaterialDelegate materialDelegate = setRootDelegate();
+		if (savedInstanceState == null && materialDelegate != null) {
+			DELEGATE.loadRootFragment(setContainerId(), materialDelegate);
 		}
 	}
 
