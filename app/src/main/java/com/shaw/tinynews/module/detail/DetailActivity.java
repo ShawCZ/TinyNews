@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -14,6 +15,7 @@ import com.shaw.tinynews.R;
 import com.shaw.tinynews.app.Constant;
 import com.shaw.tinynews.model.main.Story;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
@@ -62,6 +64,11 @@ public class DetailActivity extends BaseMaterialActivity {
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		toolbar.setTitle("");
 		setSupportActionBar(toolbar);
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setDisplayShowTitleEnabled(false);
+		}
 	}
 
 	public void loadTitle(String urlImg, String title) {
@@ -70,5 +77,17 @@ public class DetailActivity extends BaseMaterialActivity {
 				.apply(OPTIONS)
 				.into(imageView);
 		tvTitle.setText(title);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				finish();
+				break;
+			default:
+				break;
+		}
+		return true;
 	}
 }

@@ -33,9 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_margin="10dp"
-                android:text="test"
-                android:textColor="@color/md_white_1000" />
+                android:layout_margin="10dp" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"

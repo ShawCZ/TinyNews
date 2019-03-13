@@ -2,7 +2,6 @@ package com.shaw.tinynews.module.images;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.ImageViewTarget;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.shaw.tinynews.R;
 
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
 /**
@@ -34,7 +31,7 @@ import androidx.viewpager.widget.ViewPager;
 public class ImagesDialog extends Dialog {
 
 	private static final RequestOptions OPTIONS = new RequestOptions()
-			.centerCrop()
+			.centerInside()
 			.error(R.mipmap.ic_launcher)
 			.placeholder(R.mipmap.ic_launcher)
 			.diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -83,19 +80,14 @@ public class ImagesDialog extends Dialog {
 	private void initData() {
 		for (int i = 0; i < mImgUrls.size(); i++) {
 			final PhotoView photoView = new PhotoView(mContext);
-			ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+			ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			photoView.setLayoutParams(layoutParams);
 			photoView.setOnPhotoTapListener((view, x, y) -> dismiss());
 
 			Glide.with(mContext)
 					.load(mImgUrls.get(i))
 					.apply(OPTIONS)
-					.into(new ImageViewTarget<Drawable>(photoView) {
-						@Override
-						protected void setResource(@Nullable Drawable resource) {
-							photoView.setImageDrawable(resource);
-						}
-					});
+					.into(photoView);
 			mViews.add(photoView);
 			mTitles.add(i + "");
 		}
