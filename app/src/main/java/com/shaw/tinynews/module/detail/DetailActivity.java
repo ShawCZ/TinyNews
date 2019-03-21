@@ -1,5 +1,6 @@
 package com.shaw.tinynews.module.detail;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.bumptech.glide.Glide;
@@ -80,8 +82,26 @@ public class DetailActivity extends AppCompatActivity {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 			actionBar.setDisplayShowTitleEnabled(false);
 		}
-
+		initWebView();
 		load();
+	}
+
+	@SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
+	private void initWebView() {
+		WebSettings webSettings = webContent.getSettings();
+		webSettings.setAllowFileAccess(true);
+		webSettings.setAppCacheEnabled(true);
+		webSettings.setAppCachePath(getDir("cache", 0).getPath());
+		webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		webSettings.setLoadWithOverviewMode(true);
+		webSettings.setDomStorageEnabled(true);
+		webSettings.setJavaScriptEnabled(true);
+		webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+		webSettings.setBuiltInZoomControls(true);
+		webSettings.setDisplayZoomControls(false);
+		webSettings.setLoadsImagesAutomatically(true);
+		// 调用js
+		webContent.addJavascriptInterface(this, "TinyNews");
 	}
 
 	public void loadTitle(String urlImg, String title) {
